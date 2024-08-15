@@ -1,171 +1,83 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tactical Holographic Loading Screen</title>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            font-family: 'Courier New', monospace;
-            background-color: #000;
-            color: #0af;
-            overflow: hidden;
+import React, { useState, useEffect } from 'react';
+import { Loader2 } from 'lucide-react';
+
+const LoadingScreen = () => {
+  const [progress, setProgress] = useState(0);
+  const [tipIndex, setTipIndex] = useState(0);
+
+  const tips = [
+    "Stay low and move fast to avoid detection.",
+    "Always check your corners when entering a room.",
+    "Communication is key in team-based operations.",
+    "Conserve ammo - make every shot count.",
+    "Maintain situational awareness at all times."
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setProgress((prevProgress) => {
+        if (prevProgress >= 100) {
+          clearInterval(timer);
+          return 100;
         }
-        .container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            background: radial-gradient(circle, #001a33, #000);
-        }
-        .header {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px #0af;
-        }
-        .loading-bar {
-            width: 300px;
-            height: 20px;
-            background-color: rgba(0, 170, 255, 0.2);
-            border: 2px solid #0af;
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-        }
-        .progress {
-            width: 0%;
-            height: 100%;
-            background-color: #0af;
-            transition: width 0.5s ease;
-        }
-        .status {
-            margin-top: 10px;
-            font-size: 1.2em;
-        }
-        .hexagon {
-            position: absolute;
-            opacity: 0.1;
-        }
-        .tactical-info {
-            position: absolute;
-            font-size: 0.8em;
-            color: rgba(0, 170, 255, 0.7);
-        }
-        #serverInfo {
-            top: 20px;
-            left: 20px;
-        }
-        #playerCount {
-            top: 20px;
-            right: 20px;
-        }
-        #mapInfo {
-            bottom: 20px;
-            left: 20px;
-        }
-        #pingInfo {
-            bottom: 20px;
-            right: 20px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">TACTICAL INTERFACE</div>
-        <div class="loading-bar">
-            <div class="progress" id="progressBar"></div>
+        return prevProgress + 1;
+      });
+    }, 50);
+
+    const tipTimer = setInterval(() => {
+      setTipIndex((prevIndex) => (prevIndex + 1) % tips.length);
+    }, 5000);
+
+    return () => {
+      clearInterval(timer);
+      clearInterval(tipTimer);
+    };
+  }, []);
+
+  return (
+    <div className="flex flex-col items-center justify-center w-full h-screen bg-gray-900 text-blue-300 font-mono">
+      <div className="w-full max-w-3xl p-8 space-y-8">
+        <h1 className="text-4xl font-bold text-center mb-8">TACTICAL OPS</h1>
+        
+        <div className="relative w-full h-2 bg-blue-900 rounded-full overflow-hidden">
+          <div 
+            className="absolute top-0 left-0 h-full bg-blue-400 transition-all duration-300 ease-out"
+            style={{ width: `${progress}%`, boxShadow: '0 0 10px #63b3ed, 0 0 20px #63b3ed' }}
+          ></div>
         </div>
-        <div class="status" id="status">Initializing...</div>
+        
+        <div className="flex justify-between items-center">
+          <span className="text-sm">Loading assets...</span>
+          <span className="text-sm">{progress}%</span>
+        </div>
+        
+        <div className="flex items-center space-x-2 text-blue-400">
+          <Loader2 className="animate-spin" size={24} />
+          <span className="text-lg">Initializing tactical systems</span>
+        </div>
+        
+        <div className="bg-blue-900 bg-opacity-30 p-4 rounded-lg border border-blue-400 shadow-lg">
+          <h2 className="text-xl font-semibold mb-2">Tactical Tip:</h2>
+          <p className="text-sm">{tips[tipIndex]}</p>
+        </div>
+        
+        <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="bg-blue-900 bg-opacity-30 p-3 rounded-lg border border-blue-400">
+            <h3 className="font-semibold mb-1">Server Info</h3>
+            <p>Name: Tactical Ops Server</p>
+            <p>Map: cp_tacticalbase</p>
+            <p>Players: 24/32</p>
+          </div>
+          <div className="bg-blue-900 bg-opacity-30 p-3 rounded-lg border border-blue-400">
+            <h3 className="font-semibold mb-1">Your Loadout</h3>
+            <p>Primary: M4A1 Carbine</p>
+            <p>Secondary: Glock 17</p>
+            <p>Equipment: Flashbang, Smoke</p>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="tactical-info" id="serverInfo">Server: TacticalOps_01</div>
-    <div class="tactical-info" id="playerCount">Players: 0/32</div>
-    <div class="tactical-info" id="mapInfo">Map: Loading...</div>
-    <div class="tactical-info" id="pingInfo">Ping: --ms</div>
+  );
+};
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
-    <script>
-        const progressBar = document.getElementById('progressBar');
-        const status = document.getElementById('status');
-        const mapInfo = document.getElementById('mapInfo');
-        const pingInfo = document.getElementById('pingInfo');
-
-        const loadingSteps = [
-            'Establishing secure connection...',
-            'Downloading map data...',
-            'Synchronizing game state...',
-            'Loading assets...',
-            'Calibrating tactical systems...'
-        ];
-
-        let progress = 0;
-        let currentStep = 0;
-
-        function updateProgress() {
-            if (progress < 100) {
-                progress += Math.random() * 15;
-                progress = Math.min(progress, 100);
-                progressBar.style.width = `${progress}%`;
-
-                if (progress > currentStep * 20 && currentStep < loadingSteps.length) {
-                    status.textContent = loadingSteps[currentStep];
-                    currentStep++;
-                }
-
-                if (progress > 50 && mapInfo.textContent === 'Map: Loading...') {
-                    mapInfo.textContent = 'Map: tac_op_facility';
-                }
-
-                pingInfo.textContent = `Ping: ${Math.floor(Math.random() * 50 + 20)}ms`;
-
-                setTimeout(updateProgress, 200);
-            } else {
-                status.textContent = 'Ready for deployment';
-            }
-        }
-
-        function createHexagon() {
-            const hexagon = document.createElement('div');
-            hexagon.classList.add('hexagon');
-            hexagon.style.width = '40px';
-            hexagon.style.height = '35px';
-            hexagon.style.backgroundColor = '#0af';
-            hexagon.style.clipPath = 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)';
-            document.body.appendChild(hexagon);
-
-            gsap.set(hexagon, {
-                x: Math.random() * window.innerWidth,
-                y: Math.random() * window.innerHeight,
-                scale: Math.random() * 0.5 + 0.5,
-                opacity: 0
-            });
-
-            gsap.to(hexagon, {
-                duration: Math.random() * 3 + 2,
-                opacity: 0.3,
-                yoyo: true,
-                repeat: -1,
-                ease: 'power1.inOut'
-            });
-
-            gsap.to(hexagon, {
-                duration: Math.random() * 10 + 10,
-                x: '+=100',
-                y: '+=100',
-                rotation: 360,
-                repeat: -1,
-                ease: 'none'
-            });
-        }
-
-        for (let i = 0; i < 20; i++) {
-            createHexagon();
-        }
-
-        updateProgress();
-    </script>
-</body>
-</html>
+export default LoadingScreen;
