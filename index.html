@@ -1,68 +1,54 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <?php
-    $communityid = $_GET['user'];
-    $mapname = $_GET['mapname'];
-
-    $authserver = bcsub( $communityid, '76561197960265728' ) & 1;
-    $authid = ( bcsub( $communityid, '76561197960265728' ) - $authserver ) / 2;
-    $steamid = "STEAM_0:$authserver:$authid";
-    ?>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Garry's Mod Loading Screen</title>
+    <title>Refined Garry's Mod Loading Screen</title>
     <style>
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
-            font-family: Arial, sans-serif;
+            background-color: #0a0a0a;
+            overflow: hidden;
         }
         .screen {
             position: relative;
-            height: 100vh;
-            overflow: hidden;
-            background-color: #000;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle, #1a1a1a 0%, #0a0a0a 100%);
         }
-        .background-effect {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, #ff00ff, #00ffff);
-            opacity: 0.1;
-        }
-        .horizontal-bar {
-            position: absolute;
-            left: 0;
-            right: 0;
-            height: 20px;
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        .horizontal-bar-top { top: 0; }
-        .horizontal-bar-bottom { bottom: 0; }
-        .horizontal-bar-gif-top { top: 20px; }
-        .horizontal-bar-gif-bottom { bottom: 20px; }
         .container {
             display: flex;
-            justify-content: space-around;
+            justify-content: center;
             align-items: center;
-            height: 100%;
-            padding: 40px 0;
-            box-sizing: border-box;
+            perspective: 1000px;
         }
         .gif-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            position: relative;
+            transition: transform 0.3s;
+        }
+        .gif-wrapper:hover {
+            transform: scale(1.05);
+            z-index: 30;
         }
         .gif-container {
-            width: 200px;
+            width: 300px;
             height: 200px;
+            background-color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
             overflow: hidden;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+        .gif-wrapper:first-child .gif-container {
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+        }
+        .gif-wrapper:last-child .gif-container {
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
         }
         .gif {
             width: 100%;
@@ -70,31 +56,76 @@
             object-fit: cover;
         }
         .vertical-separator {
-            width: 2px;
-            height: 100px;
-            background-color: rgba(255, 255, 255, 0.3);
-            margin-top: 20px;
-        }
-        #userInfo {
             position: absolute;
-            bottom: 40px;
+            top: 0;
+            right: -1px;
+            width: 2px;
+            height: 100%;
+            background-color: #00ffff;
+            box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff;
+            animation: glow 2s ease-in-out infinite;
+            z-index: 10;
+        }
+        .gif-wrapper:last-child .vertical-separator {
+            display: none;
+        }
+        .horizontal-bar {
+            height: 2px;
+            width: 100%;
+            background-color: #00ffff;
+            box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff;
+            animation: glow 2s ease-in-out infinite;
+            position: absolute;
             left: 0;
-            right: 0;
-            text-align: center;
-            color: #fff;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 10px;
-            font-size: 18px;
+        }
+        .horizontal-bar-top {
+            top: 10%;
+        }
+        .horizontal-bar-bottom {
+            bottom: 10%;
+        }
+        .horizontal-bar-gif-top,
+        .horizontal-bar-gif-bottom {
+            width: 100%;
+            z-index: 20;
+        }
+        .horizontal-bar-gif-top {
+            top: calc(50% - 100px);
+        }
+        .horizontal-bar-gif-bottom {
+            bottom: calc(50% - 100px);
+        }
+        .background-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 255, 255, 0.1) 0px,
+                rgba(0, 255, 255, 0.1) 1px,
+                transparent 1px,
+                transparent 20px
+            );
+            pointer-events: none;
+            animation: scroll 20s linear infinite;
+        }
+        @keyframes glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        @keyframes scroll {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100%; }
         }
     </style>
 </head>
 <body>
     <div class="screen">
         <div class="background-effect"></div>
-
         <div class="horizontal-bar horizontal-bar-top"></div>
         <div class="horizontal-bar horizontal-bar-gif-top"></div>
-
         <div class="container">
             <div class="gif-wrapper">
                 <div class="gif-container">
@@ -102,14 +133,12 @@
                 </div>
                 <div class="vertical-separator"></div>
             </div>
-
             <div class="gif-wrapper">
                 <div class="gif-container">
                     <img src="jiggle-gacha.gif" alt="Garry's Mod GIF 2" class="gif">
                 </div>
                 <div class="vertical-separator"></div>
             </div>
-
             <div class="gif-wrapper">
                 <div class="gif-container">
                     <img src="jane-doe-zenless-zone-zero.gif" alt="Garry's Mod GIF 3" class="gif">
@@ -117,15 +146,8 @@
                 <div class="vertical-separator"></div>
             </div>
         </div>
-
         <div class="horizontal-bar horizontal-bar-gif-bottom"></div>
         <div class="horizontal-bar horizontal-bar-bottom"></div>
-
-        <div id="userInfo">
-            <?php echo "Welcome $steamid <br>";
-            echo "We are on $mapname!<br>";
-            echo "Have a good time!"; ?>
-        </div>
     </div>
 </body>
 </html>
