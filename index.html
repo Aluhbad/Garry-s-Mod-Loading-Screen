@@ -150,20 +150,31 @@
         <div class="horizontal-bar horizontal-bar-bottom"></div>
     </div>
 
-    <!-- Add the audio element -->
     <audio id="backgroundMusic" loop>
         <source src="gmodloadmusic.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
 
     <script>
-        // Play the background music when the page loads
-        window.addEventListener('load', function() {
+        document.addEventListener('DOMContentLoaded', function() {
             var music = document.getElementById('backgroundMusic');
-            music.volume = 0.5; // Set the volume (0.0 to 1.0)
-            music.play().catch(function(error) {
-                console.log("Audio playback failed: " + error);
-            });
+            
+            // Function to play music
+            function playMusic() {
+                music.play().catch(function(error) {
+                    console.log("Autoplay was prevented:", error);
+                });
+            }
+
+            // Try to play immediately
+            playMusic();
+
+            // If autoplay fails, play on first user interaction
+            document.body.addEventListener('click', function() {
+                if (music.paused) {
+                    playMusic();
+                }
+            }, { once: true });
         });
     </script>
 </body>
