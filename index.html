@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Refined Garry's Mod Loading Screen</title>
+    <title>Refined Garry's Mod Loading Screen with Music</title>
     <style>
         body, html {
             margin: 0;
@@ -149,5 +149,22 @@
         <div class="horizontal-bar horizontal-bar-gif-bottom"></div>
         <div class="horizontal-bar horizontal-bar-bottom"></div>
     </div>
+
+    <!-- Add the audio element -->
+    <audio id="backgroundMusic" loop>
+        <source src="gmodloadmusic.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        // Play the background music when the page loads
+        window.addEventListener('load', function() {
+            var music = document.getElementById('backgroundMusic');
+            music.volume = 0.5; // Set the volume (0.0 to 1.0)
+            music.play().catch(function(error) {
+                console.log("Audio playback failed: " + error);
+            });
+        });
+    </script>
 </body>
 </html>
